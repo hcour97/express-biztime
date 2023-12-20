@@ -2,13 +2,13 @@
 
 const express = require("express");
 const ExpressError = require("../expressError");
-const router = express.Router();
+let router = new express.Router();
 const db = require("../db");
 
 router.get('/', async (req, res, next) => {
     try {
         const results = await db.query(`SELECT code, name FROM companies ORDER BY name`);
-        return res.json({ companies: results.rows})
+        return res.json({ "companies": results.rows})
     } catch (err) {
         return next(err)
     }
@@ -22,7 +22,7 @@ router.get('/:code', async (req, res, next) => {
         if (results.rows.length === 0) {
             throw new ExpressError(`Sorry. Cannot find company with code of ${code}`, 404);
         }
-        return res.send({ company: results.rows[0]})
+        return res.json({ "company": results.rows[0]})
     } catch (err) {
         return next(err)
     }
@@ -56,7 +56,7 @@ router.put('/:code', async (req, res, next) => {
 router.delete('/:code', async (req, res, next) => {
     try {
         const results = await db.query(`DELETE FROM companies WHERE code=$1`, [req.params.code])
-        return res.send({status: "DELETED."});
+        return res.json({status: "DELETED."});
     } catch (err) {
         return next(err)
     }
